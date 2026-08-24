@@ -1,0 +1,32 @@
+name: vps-ts-user-manager
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    init: true
+    environment:
+      USERS_DB_PATH: /config/users_database.yml
+      BACKUPS_DIR: /config/backups
+      AUTHELIA_URL: http://authelia:9091
+      DOCKER_SOCKET: /var/run/docker.sock
+    volumes:
+      # Authelia's config dir on the host (users_database.yml lives here).
+      # Required: set AUTHELIA_CONFIG_DIR in your environment (e.g. Coolify).
+      - ${AUTHELIA_CONFIG_DIR:?set AUTHELIA_CONFIG_DIR to your Authelia config directory}:/config
+      # Read-only access to list Traefik-routed services
+      - ${DOCKER_SOCKET_PATH:-/var/run/docker.sock}:/var/run/docker.sock:ro
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3001/').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped

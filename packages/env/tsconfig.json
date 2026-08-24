@@ -1,0 +1,6 @@
+{
+  "extends": "@vps-ts-user-manager/config/tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["vite/client"]
+  }
+}

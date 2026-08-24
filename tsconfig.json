@@ -1,0 +1,3 @@
+{
+  "extends": "@vps-ts-user-manager/config/tsconfig.base.json"
+}

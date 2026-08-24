@@ -1,0 +1,25 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "base-lyra",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "src/styles/globals.css",
+    "baseColor": "zinc",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "iconLibrary": "hugeicons",
+  "aliases": {
+    "components": "@vps-ts-user-manager/ui/components",
+    "utils": "@vps-ts-user-manager/ui/lib/utils",
+    "hooks": "@vps-ts-user-manager/ui/hooks",
+    "lib": "@vps-ts-user-manager/ui/lib",
+    "ui": "@vps-ts-user-manager/ui/components"
+  },
+  "menuColor": "default-translucent",
+  "menuAccent": "subtle",
+  "registries": {},
+  "rtl": false
+}

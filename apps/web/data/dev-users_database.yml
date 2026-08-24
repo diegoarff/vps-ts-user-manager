@@ -1,0 +1,15 @@
+users:
+  alice:
+    disabled: false
+    displayname: Alice Example
+    password: "$argon2id$v=19$m=65536,t=3,p=4$AAAAAAAAAAAAAAAAAAAAAA$BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB"
+    email: alice@example.com
+    groups:
+      - admins
+  bob:
+    disabled: true
+    displayname: Bob Example
+    password: "$argon2id$v=19$m=65536,t=3,p=4$CCCCCCCCCCCCCCCCCCCCCC$DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD"
+    email: bob@example.com
+    groups:
+      - users
