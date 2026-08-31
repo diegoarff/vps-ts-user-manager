@@ -1,6 +1,6 @@
 # vps-ts-user-manager
 
-A web app for managing Authelia users on a self-hosted server. Authelia stores its users in a YAML file; this app gives that file a UI, so adding a user or resetting a password is a form fill instead of an SSH session and a text editor.
+A web app for managing Authelia users on a self-hosted server. Authelia stores its users in a YAML file. This app gives that file a UI.
 
 ## What it does
 
@@ -10,8 +10,6 @@ A web app for managing Authelia users on a self-hosted server. Authelia stores i
 - **Stale-guard.** If the file changed since you loaded the page, the save is rejected instead of clobbering whoever edited it.
 - **Status.** Authelia reachability, last-modified time of the user database, backup info.
 - **Services** (read-only). Lists every Traefik-routed domain and whether it sits behind the `authelia@file` middleware.
-
-The screenshots below use mock data.
 
 ## Screens
 
