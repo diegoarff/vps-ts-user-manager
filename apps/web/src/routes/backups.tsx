@@ -12,14 +12,8 @@ import {
   EmptyTitle,
 } from "@vps-ts-user-manager/ui/components/empty";
 import { Skeleton } from "@vps-ts-user-manager/ui/components/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@vps-ts-user-manager/ui/components/table";
+
+import { DataTable } from "../components/data-table";
 
 import { DiffView } from "../components/diff-view";
 import { PageHeader, StatCard } from "../components/ui-bits";
@@ -114,61 +108,68 @@ function BackupsComponent() {
             />
           </div>
 
-          <div className="border">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="label-mono">File</TableHead>
-                  <TableHead className="label-mono">Created</TableHead>
-                  <TableHead className="w-36 text-right label-mono">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {backups.map((b) => (
-                  <TableRow key={b.name}>
-                    <TableCell className="font-mono text-xs">{b.name}</TableCell>
-                    <TableCell>
-                      <span className="font-mono text-xs tabular-nums text-muted-foreground">
-                        {new Date(b.createdAtMs).toLocaleString()}
-                      </span>
-                      <span className="ml-2 font-mono text-[10px] text-muted-foreground/70">
-                        {(b.sizeBytes / 1024).toFixed(1)} KB
-                      </span>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-1">
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          className="font-mono"
-                          onClick={() => setSelected(selected?.name === b.name ? null : b)}
-                        >
-                          {selected?.name === b.name ? "hide" : "inspect"}
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="xs"
-                          className="font-mono"
-                          disabled={restoreMutation.isPending}
-                          onClick={() => {
-                            if (
-                              confirm(
-                                `Restore ${b.name}? This replaces the current users database; the current file is backed up first.`,
-                              )
-                            ) {
-                              restoreMutation.mutate(b.name);
-                            }
-                          }}
-                        >
-                          restore
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <DataTable
+            columns={[
+              {
+                id: "file",
+                header: "File",
+                headerClassName: "w-1/2",
+                cellClassName: "break-all font-mono text-xs",
+                cell: (b) => b.name,
+              },
+              {
+                id: "created",
+                header: "Created",
+                cell: (b) => (
+                  <>
+                    <span className="font-mono text-xs tabular-nums text-muted-foreground">
+                      {new Date(b.createdAtMs).toLocaleString()}
+                    </span>
+                    <span className="ml-2 font-mono text-[10px] text-muted-foreground/70">
+                      {(b.sizeBytes / 1024).toFixed(1)} KB
+                    </span>
+                  </>
+                ),
+              },
+              {
+                id: "actions",
+                header: "Actions",
+                align: "right",
+                headerClassName: "w-36",
+                cell: (b) => (
+                  <div className="flex justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="xs"
+                      className="font-mono"
+                      onClick={() => setSelected(selected?.name === b.name ? null : b)}
+                    >
+                      {selected?.name === b.name ? "hide" : "inspect"}
+                    </Button>
+                    <Button
+                      variant="destructive"
+                      size="xs"
+                      className="font-mono"
+                      disabled={restoreMutation.isPending}
+                      onClick={() => {
+                        if (
+                          confirm(
+                            `Restore ${b.name}? This replaces the current users database; the current file is backed up first.`,
+                          )
+                        ) {
+                          restoreMutation.mutate(b.name);
+                        }
+                      }}
+                    >
+                      restore
+                    </Button>
+                  </div>
+                ),
+              },
+            ]}
+            rows={backups}
+            getRowKey={(b) => b.name}
+          />
         </>
       )}
 
