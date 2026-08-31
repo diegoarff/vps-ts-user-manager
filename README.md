@@ -11,6 +11,22 @@ A web app for managing Authelia users on a self-hosted server. Authelia stores i
 - **Status.** Authelia reachability, last-modified time of the user database, backup info.
 - **Services** (read-only). Lists every Traefik-routed domain and whether it sits behind the `authelia@file` middleware.
 
+The screenshots below use mock data.
+
+## Screens
+
+| Status                                                             | Users                                                            |
+| ------------------------------------------------------------------ | ---------------------------------------------------------------- |
+| <img src="docs/screens/status.png" alt="Status page" width="100%"> | <img src="docs/screens/users.png" alt="Users page" width="100%"> |
+
+| Edit                                                                           | Diff review                                                                  |
+| ------------------------------------------------------------------------------ | ---------------------------------------------------------------------------- |
+| <img src="docs/screens/users-edit-full.png" alt="Editing a user" width="100%"> | <img src="docs/screens/diff.png" alt="Diff review before save" width="100%"> |
+
+| Backups                                                              | Services                                                               |
+| -------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| <img src="docs/screens/backups.png" alt="Backups page" width="100%"> | <img src="docs/screens/services.png" alt="Services page" width="100%"> |
+
 ## How it works
 
 The app reads and writes `users_database.yml` directly; it keeps no database of its own. Writes are atomic (temp file plus rename) and validated before they touch disk. Passwords are hashed with argon2id using Authelia's recommended parameters.
