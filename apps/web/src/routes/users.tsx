@@ -12,16 +12,9 @@ import {
   EmptyTitle,
 } from "@vps-ts-user-manager/ui/components/empty";
 import { Skeleton } from "@vps-ts-user-manager/ui/components/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@vps-ts-user-manager/ui/components/table";
 import { Textarea } from "@vps-ts-user-manager/ui/components/textarea";
 
+import { DataTable } from "../components/data-table";
 import { EditUserPanel } from "../components/edit-user-panel";
 import { PageHeader } from "../components/ui-bits";
 import { DiffView } from "../components/diff-view";
@@ -263,81 +256,90 @@ function UsersComponent() {
       )}
 
       {drafts.length > 0 && (
-        <div className="border">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent">
-                <TableHead className="label-mono">User</TableHead>
-                <TableHead className="label-mono">Groups</TableHead>
-                <TableHead className="label-mono">Status</TableHead>
-                <TableHead className="w-36 text-right label-mono">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {drafts.map((d, i) => (
-                <TableRow key={d.username} data-selected={editing === i}>
-                  <TableCell>
-                    <div className="font-medium">{d.displayname || d.username}</div>
-                    <div className="font-mono text-xs text-muted-foreground">{d.username}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {d.groups.map((g) => (
-                        <Badge key={g} variant="secondary" className="font-mono text-[10px]">
-                          {g}
-                        </Badge>
-                      ))}
-                    </div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="flex flex-wrap gap-1">
-                      {d.disabled ? (
-                        <Badge variant="destructive" className="font-mono text-[10px]">
-                          disabled
-                        </Badge>
-                      ) : (
-                        <Badge
-                          variant="outline"
-                          className="border-emerald-400/30 font-mono text-[10px] text-emerald-400"
-                        >
-                          active
-                        </Badge>
-                      )}
-                      {d.pendingPassword !== undefined && (
-                        <Badge
-                          variant="outline"
-                          className="border-amber-400/40 font-mono text-[10px] text-amber-400"
-                        >
-                          pw pending
-                        </Badge>
-                      )}
-                    </div>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <div className="flex justify-end gap-1">
-                      <Button
-                        variant="ghost"
-                        size="xs"
-                        onClick={() => setEditing(editing === i ? null : i)}
-                        className="font-mono"
-                      >
-                        {editing === i ? "close" : "edit"}
-                      </Button>
-                      <Button
-                        variant="destructive"
-                        size="xs"
-                        onClick={() => void removeUser(d)}
-                        className="font-mono"
-                      >
-                        remove
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
+        <DataTable
+          columns={[
+            {
+              id: "user",
+              header: "User",
+              headerClassName: "w-2/5",
+              cell: (d) => (
+                <div>
+                  <div className="font-medium">{d.displayname || d.username}</div>
+                  <div className="font-mono text-xs text-muted-foreground">{d.username}</div>
+                </div>
+              ),
+            },
+            {
+              id: "groups",
+              header: "Groups",
+              cell: (d) => (
+                <div className="flex flex-wrap gap-1">
+                  {d.groups.map((g) => (
+                    <Badge key={g} variant="secondary" className="font-mono text-[10px]">
+                      {g}
+                    </Badge>
+                  ))}
+                </div>
+              ),
+            },
+            {
+              id: "status",
+              header: "Status",
+              cell: (d) => (
+                <div className="flex flex-wrap gap-1">
+                  {d.disabled ? (
+                    <Badge variant="destructive" className="font-mono text-[10px]">
+                      disabled
+                    </Badge>
+                  ) : (
+                    <Badge
+                      variant="outline"
+                      className="border-emerald-400/30 font-mono text-[10px] text-emerald-400"
+                    >
+                      active
+                    </Badge>
+                  )}
+                  {d.pendingPassword !== undefined && (
+                    <Badge
+                      variant="outline"
+                      className="border-amber-400/40 font-mono text-[10px] text-amber-400"
+                    >
+                      pw pending
+                    </Badge>
+                  )}
+                </div>
+              ),
+            },
+            {
+              id: "actions",
+              header: "Actions",
+              align: "right",
+              headerClassName: "w-36",
+              cell: (d, i) => (
+                <div className="flex justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="xs"
+                    onClick={() => setEditing(editing === i ? null : i)}
+                    className="font-mono"
+                  >
+                    {editing === i ? "close" : "edit"}
+                  </Button>
+                  <Button
+                    variant="destructive"
+                    size="xs"
+                    onClick={() => void removeUser(d)}
+                    className="font-mono"
+                  >
+                    remove
+                  </Button>
+                </div>
+              ),
+            },
+          ]}
+          rows={drafts}
+          getRowKey={(d) => d.username}
+        />
       )}
 
       {drafts.length > 0 && (

@@ -11,15 +11,8 @@ import {
   EmptyTitle,
 } from "@vps-ts-user-manager/ui/components/empty";
 import { Skeleton } from "@vps-ts-user-manager/ui/components/skeleton";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@vps-ts-user-manager/ui/components/table";
 
+import { DataTable } from "../components/data-table";
 import { PageHeader } from "../components/ui-bits";
 import { servicesQueryOptions } from "../lib/queries";
 
@@ -81,44 +74,47 @@ function ServicesComponent() {
           <p className="label-mono mb-3">
             {protectedCount} of {data.length} behind authelia
           </p>
-          <div className="border">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent">
-                  <TableHead className="label-mono">Domain</TableHead>
-                  <TableHead className="label-mono">Container</TableHead>
-                  <TableHead className="w-28 text-right label-mono">Auth</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data.map((s) => (
-                  <TableRow key={s.domain}>
-                    <TableCell className="font-mono text-xs">{s.domain}</TableCell>
-                    <TableCell className="text-xs text-muted-foreground">
-                      {s.containers.join(", ")}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      {s.autheliaProtected ? (
-                        <Badge
-                          variant="outline"
-                          className="border-emerald-400/30 font-mono text-[10px] text-emerald-400"
-                        >
-                          authelia
-                        </Badge>
-                      ) : (
-                        <Badge
-                          variant="secondary"
-                          className="font-mono text-[10px] text-muted-foreground"
-                        >
-                          none
-                        </Badge>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+          <DataTable
+            columns={[
+              {
+                id: "domain",
+                header: "Domain",
+                headerClassName: "w-1/2",
+                cellClassName: "break-all font-mono text-xs",
+                cell: (s) => s.domain,
+              },
+              {
+                id: "containers",
+                header: "Container",
+                cellClassName: "break-words text-xs text-muted-foreground",
+                cell: (s) => s.containers.join(", "),
+              },
+              {
+                id: "auth",
+                header: "Auth",
+                align: "right",
+                headerClassName: "w-24",
+                cell: (s) =>
+                  s.autheliaProtected ? (
+                    <Badge
+                      variant="outline"
+                      className="border-emerald-400/30 font-mono text-[10px] text-emerald-400"
+                    >
+                      authelia
+                    </Badge>
+                  ) : (
+                    <Badge
+                      variant="secondary"
+                      className="font-mono text-[10px] text-muted-foreground"
+                    >
+                      none
+                    </Badge>
+                  ),
+              },
+            ]}
+            rows={data}
+            getRowKey={(s) => s.domain}
+          />
         </>
       )}
     </div>
