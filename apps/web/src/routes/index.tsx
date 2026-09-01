@@ -4,7 +4,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { Button } from "@vps-ts-user-manager/ui/components/button";
 import { Skeleton } from "@vps-ts-user-manager/ui/components/skeleton";
 
-import { PageHeader, StatCard, StatusDot } from "../components/ui-bits";
+import { PageShell } from "../components/page-shell";
+import { StatCard, StatusDot } from "../components/ui-bits";
 import { statusQueryOptions } from "../lib/queries";
 
 export const Route = createFileRoute("/")({
@@ -20,7 +21,7 @@ function StatusComponent() {
 
   if (isLoading) {
     return (
-      <div className="mx-auto w-full max-w-5xl px-6 py-8">
+      <PageShell title="Status">
         <Skeleton className="mb-6 h-14" />
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Skeleton className="h-24" />
@@ -28,32 +29,30 @@ function StatusComponent() {
           <Skeleton className="h-24" />
           <Skeleton className="h-24" />
         </div>
-      </div>
+      </PageShell>
     );
   }
 
   if (error || !data) {
     return (
-      <div className="mx-auto w-full max-w-5xl px-6 py-8">
+      <PageShell title="Status">
         <p className="font-mono text-sm text-red-400">
           status: unavailable — is the users database mounted?
         </p>
-      </div>
+      </PageShell>
     );
   }
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-6 py-8">
-      <PageHeader
-        title="Status"
-        description="Live state of the users database and the Authelia instance it feeds."
-        actions={
-          <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
-            {isFetching ? "Refreshing…" : "Refresh"}
-          </Button>
-        }
-      />
-
+    <PageShell
+      title="Status"
+      description="Live state of the users database and the Authelia instance it feeds."
+      actions={
+        <Button variant="outline" size="sm" onClick={() => refetch()} disabled={isFetching}>
+          {isFetching ? "Refreshing…" : "Refresh"}
+        </Button>
+      }
+    >
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Users" value={String(data.userCount)} sub="entries in the database" />
         <StatCard
@@ -89,6 +88,6 @@ function StatusComponent() {
         User changes apply within seconds via Authelia's file watcher. Restarts are only needed for
         configuration.yml changes, which this app does not edit.
       </p>
-    </div>
+    </PageShell>
   );
 }
