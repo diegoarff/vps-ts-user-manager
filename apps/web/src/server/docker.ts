@@ -2,16 +2,23 @@ import http from "node:http";
 
 import { env } from "@vps-ts-user-manager/env/server";
 
-import type { ServiceEntry } from "../lib/types";
+import type { ServiceEntry, ServiceVisibility } from "../lib/types";
 
 interface ContainerSummary {
   Names?: string[];
   Labels?: Record<string, string>;
 }
 
+/**
+ * Classify domains the app can't infer from the Docker socket alone.
+ * The Traefik file-provider middlewares and Cloudflare DNS records are not
+ * visible through Docker labels, so tailnet-only and Authelia-protected
+ * domains are declared explicitly via env (comma-separated). Anything not
+ * listed defaults to "public".
+ */
 export async function listProtectedServices(): Promise<ServiceEntry[]> {
   const containers = await dockerRequest<ContainerSummary[]>("/containers/json");
-  const byDomain = new Map<string, { containers: Set<string>; protected: boolean }>();
+  const byDomain = new Map<string, { containers: Set<string>; autheliaProtected: boolean }>();
 
   for (const c of containers) {
     const name = (c.Names?.[0] ?? "").replace(/^\//, "");
@@ -21,7 +28,7 @@ export async function listProtectedServices(): Promise<ServiceEntry[]> {
       if (!ruleMatch) continue;
       const domain = extractHost(value);
       if (!domain) continue;
-      const entry = byDomain.get(domain) ?? { containers: new Set(), protected: false };
+      const entry = byDomain.get(domain) ?? { containers: new Set(), autheliaProtected: false };
       entry.containers.add(name);
       const mwKey = `traefik.http.routers.${ruleMatch[1]}.middlewares`;
       if (
@@ -30,19 +37,43 @@ export async function listProtectedServices(): Promise<ServiceEntry[]> {
           .map((m) => m.trim())
           .includes("authelia@file")
       ) {
-        entry.protected = true;
+        entry.autheliaProtected = true;
       }
       byDomain.set(domain, entry);
     }
   }
 
+  const tailnetDomains = parseDomains(env.SERVICES_TAILNET_DOMAINS);
+  const autheliaDomains = parseDomains(env.SERVICES_AUTHELIA_DOMAINS);
+
   return [...byDomain.entries()]
     .map(([domain, e]) => ({
       domain,
       containers: [...e.containers].toSorted(),
-      autheliaProtected: e.protected,
+      autheliaProtected: e.autheliaProtected,
+      visibility: classify(e.autheliaProtected, tailnetDomains, autheliaDomains, domain),
     }))
     .toSorted((a, b) => a.domain.localeCompare(b.domain));
+}
+
+function classify(
+  autheliaProtected: boolean,
+  tailnetDomains: Set<string>,
+  autheliaDomains: Set<string>,
+  domain: string,
+): ServiceVisibility {
+  if (autheliaProtected || autheliaDomains.has(domain)) return "authelia";
+  if (tailnetDomains.has(domain)) return "tailnet";
+  return "public";
+}
+
+function parseDomains(list: string): Set<string> {
+  return new Set(
+    list
+      .split(",")
+      .map((d) => d.trim())
+      .filter(Boolean),
+  );
 }
 
 function extractHost(rule: string): string | null {

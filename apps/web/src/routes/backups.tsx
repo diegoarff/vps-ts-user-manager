@@ -16,7 +16,8 @@ import { Skeleton } from "@vps-ts-user-manager/ui/components/skeleton";
 import { DataTable } from "../components/data-table";
 
 import { DiffView } from "../components/diff-view";
-import { PageHeader, StatCard } from "../components/ui-bits";
+import { PageShell } from "../components/page-shell";
+import { StatCard } from "../components/ui-bits";
 import { restoreBackupFn } from "../functions/api";
 import { backupYamlQueryOptions, backupsQueryOptions, snapshotQueryOptions } from "../lib/queries";
 import type { BackupEntry } from "../lib/types";
@@ -69,12 +70,10 @@ function BackupsComponent() {
   const diff = selected ? restoreDiff() : null;
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-6 py-8">
-      <PageHeader
-        title="Backups"
-        description="A backup is taken before every save. The latest 20 are kept."
-      />
-
+    <PageShell
+      title="Backups"
+      description="A backup is taken before every save. The latest 20 are kept."
+    >
       {backupsQuery.isLoading && (
         <div className="grid gap-2">
           <Skeleton className="h-12" />
@@ -174,14 +173,14 @@ function BackupsComponent() {
       )}
 
       {selected && (
-        <div className="mt-4 border bg-card">
+        <div className="mt-4 min-w-0 border bg-card">
           <div className="flex items-center justify-between border-b px-4 py-3">
             <p className="label-mono">Restore preview · {selected.name}</p>
             <span className="font-mono text-[10px] text-muted-foreground">
               "+" comes back · "-" is replaced
             </span>
           </div>
-          <div className="p-4">
+          <div className="min-w-0 p-4">
             {backupYamlQuery.isLoading || !diff ? (
               <Skeleton className="h-24" />
             ) : (
@@ -190,6 +189,6 @@ function BackupsComponent() {
           </div>
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }

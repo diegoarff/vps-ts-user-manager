@@ -28,10 +28,13 @@ export interface ApplyResult {
   generatedPassword: string | null;
 }
 
+export type ServiceVisibility = "public" | "tailnet" | "authelia";
+
 export interface ServiceEntry {
   domain: string;
   containers: string[];
   autheliaProtected: boolean;
+  visibility: ServiceVisibility;
 }
 
 export interface StatusInfo {

@@ -16,7 +16,7 @@ import { Textarea } from "@vps-ts-user-manager/ui/components/textarea";
 
 import { DataTable } from "../components/data-table";
 import { EditUserPanel } from "../components/edit-user-panel";
-import { PageHeader } from "../components/ui-bits";
+import { PageShell } from "../components/page-shell";
 import { DiffView } from "../components/diff-view";
 import { applyChanges, exportYaml, importPreview, previewDiff } from "../functions/api";
 import { snapshotQueryOptions } from "../lib/queries";
@@ -163,30 +163,28 @@ function UsersComponent() {
   const selected = editing !== null ? (drafts[editing] ?? null) : null;
 
   return (
-    <div className="mx-auto w-full max-w-5xl px-6 py-8">
-      <PageHeader
-        title="Users"
-        description="Entries in the Authelia users database. Every save is diffed and backed up."
-        actions={
-          <>
-            <Button size="sm" onClick={() => void addUser()}>
-              Add user
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => void downloadExport()}>
-              Export
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setImportOpen(!importOpen)}
-              aria-expanded={importOpen}
-            >
-              Import
-            </Button>
-          </>
-        }
-      />
-
+    <PageShell
+      title="Users"
+      description="Entries in the Authelia users database. Every save is diffed and backed up."
+      actions={
+        <>
+          <Button size="sm" onClick={() => void addUser()}>
+            Add user
+          </Button>
+          <Button variant="outline" size="sm" onClick={() => void downloadExport()}>
+            Export
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setImportOpen(!importOpen)}
+            aria-expanded={importOpen}
+          >
+            Import
+          </Button>
+        </>
+      }
+    >
       {selected && editing !== null && (
         <EditUserPanel
           index={editing}
@@ -369,7 +367,7 @@ function UsersComponent() {
       )}
 
       {review !== null && (
-        <div className="mt-4 border bg-card">
+        <div className="mt-4 min-w-0 border bg-card">
           <div className="flex items-center justify-between border-b px-4 py-3">
             <p className="label-mono">Proposed changes</p>
             <span className="font-mono text-[10px] text-muted-foreground">
@@ -393,6 +391,6 @@ function UsersComponent() {
           </div>
         </div>
       )}
-    </div>
+    </PageShell>
   );
 }
